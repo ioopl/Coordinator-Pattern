@@ -1,12 +1,6 @@
-//
-//  SceneDelegate.swift
-//  Coordinator Pattern
-//
-//  Created by Umair Hasan on 29/09/2025.
-//
-
 import UIKit
 
+/*
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
@@ -46,7 +40,28 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Use this method to save data, release shared resources, and store enough scene-specific state information
         // to restore the scene back to its current state.
     }
+}
+ */
 
+class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+    var window: UIWindow?
+    private var appCoordinator: AppCoordinator?
 
+    func scene(
+        _ scene: UIScene,
+        willConnectTo session: UISceneSession,
+        options connectionOptions: UIScene.ConnectionOptions
+    ) {
+        guard let windowScene = scene as? UIWindowScene else { return }
+        let window = UIWindow(windowScene: windowScene)
+        self.window = window
+
+        // Toggle this to simulate logged-in vs logged-out
+        let isAuthenticated = false
+
+        let app = AppCoordinator(window: window, isAuthenticated: isAuthenticated)
+        self.appCoordinator = app
+        app.start()
+    }
 }
 
