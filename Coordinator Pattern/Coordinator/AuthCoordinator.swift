@@ -11,6 +11,7 @@ final class AuthCoordinator: BaseCoordinator {
 
     override func start() {
         
+        /*
         let vc = LoginViewController()
         
         vc.onLogin = { [weak self] in
@@ -20,7 +21,18 @@ final class AuthCoordinator: BaseCoordinator {
         vc.onCancel = { [weak self] in
             self?.onFinish?(.LoginSuccess)
         }
+        */
         
+        let vm = LoginViewModel()
+        vm.onLogin  = { [weak self] in
+            self?.onFinish?(.LoginSuccess)
+        }
+        vm.onCancel = { [weak self] in
+            self?.onFinish?(.LoginCancelled)
+        }
+
+        // Inject VM into VC
+        let vc = LoginViewController(viewModel: vm)
         navigationController.setViewControllers([vc], animated: false)
     }
 }

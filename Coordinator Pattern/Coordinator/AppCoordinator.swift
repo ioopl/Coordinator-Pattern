@@ -16,7 +16,6 @@ final class AppCoordinator: BaseCoordinator {
     }
 
     override func start() {
-        
         window.rootViewController = navigationController
         window.makeKeyAndVisible()
         route()
@@ -65,7 +64,9 @@ final class AppCoordinator: BaseCoordinator {
 
             guard let self else { return }
 
-            if let main { self.remove(child: main) }
+            if let main {
+                self.remove(child: main)
+            }
 
             self.isAuthenticated = false
 
