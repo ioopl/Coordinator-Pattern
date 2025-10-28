@@ -15,11 +15,13 @@ protocol Coordinator {
 }
 
 final class AuthCoordinator: Coordinator {
+
+    // Step 1 — Define what onFinish is
     // The closure the PARENT sets; the CHILD calls.
     // AuthResult is the input type — what the closure receives when it’s called. In our case it’s an enum .success or .cancelled.
     // This means “I can hold a closure (callback) that accepts one AuthResult value (like .success or .cancelled) and returns nothing.”
     // At this point, onFinish is empty — no one has given it a closure yet.
-    // Step 1 — Define what onFinish is
+    
     var onFinish: ((AuthResult) -> Void)?
 
     func start() {
@@ -30,12 +32,14 @@ final class AuthCoordinator: Coordinator {
     // Simulate user actions:
     func simulateUserTappedLogin() {
         print("AuthCoordinator: user tapped Log In ➜ finishing with .success")
+        
         // Step 3 — Child (AuthCoordinator) calls the closure
         // When something happens inside AuthCoordinator (say, user taps “Log In”), we run:
         // “If my onFinish closure has been set, call it now, and give it the value .success as its input.”
         // Think of this as PUBLISHING the event with the payload.
         // Invokes (calls) that particular closure now, passing the value .success.
         // It says: “I’m done; here’s my result.”
+        
         onFinish?(.success) // <-- CHILD calls the closure, passing data which is the enum .success upward
     }
 
@@ -58,15 +62,16 @@ final class AppCoordinator: Coordinator {
 
     private func showAuth() {
         print("AppCoordinator: presenting Auth flow")
-        // Parent AppCoordinator creates child AuthCoordinator
+        // This Parent AppCoordinator creates child AuthCoordinator
         let auth = AuthCoordinator()
 
+        // Step 2 — Parent (AppCoordinator) SETS the closure
         // PARENT sets the child's callback (closure).
         // The child will CALL this later.
-        // Step 2 — Parent (AppCoordinator) sets the closure
         // Think of this as SUBSCRIBING to an event and specifying what to do when it fires.
         // Assigns/defines the closure (the handler) that will run later.
-        // What happens when we write [weak self] That means: “Inside this closure, if I reference self, capture it weakly (don’t increase its retain count).” So if the AppCoordinator (the self here) is deallocated, the closure won’t keep it alive and cause a memory leak. ✅ That protects against this retain cycle.
+        
+        // secondly, what happens when we write [weak self] That means: “Inside this closure, if I reference self, capture it weakly (don’t increase its retain count).” So if the AppCoordinator (the self here) is deallocated, the closure won’t keep it alive and cause a memory leak. ✅ That protects against this retain cycle.
         // Why do we also add [weak auth]? Because inside the closure, we also reference the child coordinator (auth) here: if let auth ...
         // So if we didn’t make auth weak, then this closure (which belongs to the parent) would strongly capture the child again — creating another cycle : That would prevent AuthCoordinator from ever deallocating, even after we remove it from the child array. https://chatgpt.com/s/t_68e3bb351e2c8191bf0c7e35a74db466
         
@@ -75,7 +80,9 @@ final class AppCoordinator: Coordinator {
             print("AppCoordinator: received Auth result = \(result)")
 
             // Clean up child (so it can deallocate)
-            if let auth { print("AppCoordinator: removing child \(auth)") }
+            if let auth {
+                print("AppCoordinator: removing child \(auth)")
+            }
             self.authCoordinator = nil
 
             switch result {
