@@ -1,10 +1,16 @@
 What each piece is doing (and why)
 Coordinator (protocol): a tiny interface so all coordinators expose start() and hold a UINavigationController. That’s it.
+
 BaseCoordinator (optional): just avoids copy-pasting child-coordinator bookkeeping (childCoordinators, add/remove). You can delete it if you don’t need multiple nested flows.
+
 AuthCoordinator.onFinish: this is the output of the auth flow. The parent (AppCoordinator) needs to know “login succeeded/cancelled” to switch to Main. We use a callback so Auth doesn’t call parent APIs directly (decoupling + easy to unit test).
+
 Bridge: LoginViewController.onLogin → AuthCoordinator.onFinish(.success) → AppCoordinator swaps to Main.
+
 MainCoordinator.onLogout: the mirror of the above. “User wants out,” bubble that up to the parent so it can swap back to Auth.
+
 Bridge: HomeViewController.onLogout → MainCoordinator.onLogout() → AppCoordinator shows Auth.
+
 Think of VC closures as intent signals (“user tapped X”), and coordinator closures as flow outputs (“this flow is done”). That separation keeps VCs dumb and flows testable.
 
 Ref: https://chatgpt.com/s/t_68dc6754197c819180ce346f11515086
